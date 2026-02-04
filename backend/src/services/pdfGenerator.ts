@@ -3,7 +3,8 @@
 // Generates executive-friendly PDF reports
 // ============================================
 
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { OrganizationAnalytics } from "../types";
 
 /* ------------------ Helpers ------------------ */
@@ -127,20 +128,13 @@ export async function generatePDFReport(
 
   try {
     browser = await puppeteer.launch({
-      headless: true,
-      executablePath: puppeteer.executablePath(),
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--no-zygote",
-        "--single-process",
-      ],
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
     });
 
     const page = await browser.newPage();
-
     await page.setViewport({ width: 1280, height: 800 });
 
     const html = generateHTMLReport(analytics);
