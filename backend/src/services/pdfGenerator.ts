@@ -28,29 +28,27 @@ function generateSeverityChart(
 ): string {
   const colors = ["#10B981", "#84CC16", "#F59E0B", "#F97316", "#EF4444"];
 
-  const bars = distribution
-    .map(
-      (band, i) => `
-      <div style="display:flex;align-items:center;margin:4px 0;">
-        <div style="width:100px;font-size:11px;">${band.label}</div>
-        <div style="flex:1;background:#E5E7EB;height:18px;border-radius:4px;overflow:hidden;">
-          <div style="width:${band.percentage}%;background:${colors[i]};height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;">
-            <span style="font-size:10px;color:white;font-weight:600;">
-              ${band.percentage}%
-            </span>
-          </div>
-        </div>
-      </div>
-    `
-    )
-    .join("");
-
   return `
     <div style="margin:15px 0;">
       <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:#374151;">
         ${title}
       </div>
-      ${bars}
+      ${distribution
+        .map(
+          (band, i) => `
+        <div style="display:flex;align-items:center;margin:4px 0;">
+          <div style="width:100px;font-size:11px;">${band.label}</div>
+          <div style="flex:1;background:#E5E7EB;height:18px;border-radius:4px;overflow:hidden;">
+            <div style="width:${band.percentage}%;background:${colors[i]};height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:4px;">
+              <span style="font-size:10px;color:white;font-weight:600;">
+                ${band.percentage}%
+              </span>
+            </div>
+          </div>
+        </div>
+      `
+        )
+        .join("")}
     </div>
   `;
 }
@@ -129,9 +127,8 @@ export async function generatePDFReport(
   try {
     browser = await puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
+      headless: true, // explicitly set, no typing issue
     });
 
     const page = await browser.newPage();
