@@ -15,7 +15,7 @@ export function Header() {
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Wellness Outcomes Platform</h1>
+              <h1 className="text-xl font-bold text-gray-900">YourDost QBR</h1>
               <p className="text-sm text-gray-500">Corporate Mental Health Analytics</p>
             </div>
           </div>

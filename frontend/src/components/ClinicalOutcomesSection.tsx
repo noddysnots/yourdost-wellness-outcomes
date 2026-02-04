@@ -18,6 +18,7 @@ import {
   Cell,
   PieChart,
   Pie,
+  ReferenceLine,
 } from 'recharts';
 import { TrendingDown, TrendingUp, Activity, Info } from 'lucide-react';
 
@@ -156,42 +157,66 @@ export function ClinicalOutcomesSection({ analytics }: Props) {
         {/* Time Series Chart */}
         <div>
           <h4 className="text-sm font-semibold text-gray-700 mb-4">Score Trends Over Time</h4>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={timeSeries}>
+              <LineChart data={timeSeries} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis 
                   dataKey="week" 
                   tickFormatter={(v) => v === 0 ? 'Baseline' : `Wk ${v}`}
                   tick={{ fontSize: 11 }}
+                  axisLine={{ stroke: '#9CA3AF' }}
                 />
-                <YAxis tick={{ fontSize: 11 }} />
+                <YAxis 
+                  yAxisId="left"
+                  domain={[0, 27]} 
+                  tick={{ fontSize: 11 }}
+                  axisLine={{ stroke: '#3B82F6' }}
+                  tickLine={{ stroke: '#3B82F6' }}
+                  label={{ value: 'PHQ-9', angle: -90, position: 'insideLeft', style: { fontSize: 10, fill: '#3B82F6' } }}
+                />
+                <YAxis 
+                  yAxisId="right"
+                  orientation="right"
+                  domain={[0, 100]} 
+                  tick={{ fontSize: 11 }}
+                  axisLine={{ stroke: '#10B981' }}
+                  tickLine={{ stroke: '#10B981' }}
+                  label={{ value: 'WHO-5', angle: 90, position: 'insideRight', style: { fontSize: 10, fill: '#10B981' } }}
+                />
+                <ReferenceLine yAxisId="left" y={10} stroke="#3B82F6" strokeDasharray="5 5" strokeOpacity={0.5} />
+                <ReferenceLine yAxisId="right" y={50} stroke="#10B981" strokeDasharray="5 5" strokeOpacity={0.5} />
                 <Tooltip 
                   formatter={(value: number, name: string) => [
                     value.toFixed(1), 
-                    name === 'phq9Mean' ? 'PHQ-9' : name === 'who5Mean' ? 'WHO-5' : 'GAD-7'
+                    name === 'phq9Mean' ? 'PHQ-9 (0-27)' : 'WHO-5 (0-100)'
                   ]}
                   labelFormatter={(v) => v === 0 ? 'Baseline' : `Week ${v}`}
+                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
                 />
                 <Legend 
                   formatter={(value) => 
-                    value === 'phq9Mean' ? 'PHQ-9 (Depression)' : 
-                    value === 'who5Mean' ? 'WHO-5 (Well-being)' : 'GAD-7 (Anxiety)'
+                    value === 'phq9Mean' ? 'PHQ-9 (Depression)' : 'WHO-5 (Well-being)'
                   }
+                  wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
                 />
                 <Line 
+                  yAxisId="left"
                   type="monotone" 
                   dataKey="phq9Mean" 
                   stroke="#3B82F6" 
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  dot={{ r: 3, fill: '#3B82F6' }}
+                  activeDot={{ r: 5 }}
                 />
                 <Line 
+                  yAxisId="right"
                   type="monotone" 
                   dataKey="who5Mean" 
                   stroke="#10B981" 
                   strokeWidth={2}
-                  dot={{ r: 3 }}
+                  dot={{ r: 3, fill: '#10B981' }}
+                  activeDot={{ r: 5 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -240,26 +265,48 @@ export function ClinicalOutcomesSection({ analytics }: Props) {
           </div>
 
           {/* Movement Summary */}
-          <div className="flex items-center justify-center">
-            <div className="h-48 w-48">
+          <div className="flex flex-col items-center justify-center">
+            <h5 className="text-xs font-medium text-gray-500 mb-3">Severity Movement</h5>
+            <div className="h-64 w-full max-w-xs">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={movementData}
                     cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    paddingAngle={2}
+                    cy="45%"
+                    innerRadius={50}
+                    outerRadius={80}
+                    paddingAngle={3}
                     dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
+                    label={({ name, percent, cx, cy, midAngle, outerRadius }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = outerRadius + 25;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      return (
+                        <text
+                          x={x}
+                          y={y}
+                          fill="#374151"
+                          textAnchor={x > cx ? 'start' : 'end'}
+                          dominantBaseline="central"
+                          fontSize={11}
+                          fontWeight={500}
+                        >
+                          {`${name} ${(percent * 100).toFixed(0)}%`}
+                        </text>
+                      );
+                    }}
+                    labelLine={{ stroke: '#9CA3AF', strokeWidth: 1 }}
                   >
                     {movementData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={2} stroke="#fff" />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(v: number) => [v, 'Employees']} />
+                  <Tooltip 
+                    formatter={(v: number) => [v, 'Employees']} 
+                    contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>

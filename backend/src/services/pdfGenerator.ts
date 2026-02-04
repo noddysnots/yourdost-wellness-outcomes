@@ -437,7 +437,7 @@ function generateHTMLReport(analytics: OrganizationAnalytics): string {
     
     <div class="footer" style="margin-top: 40px;">
       <div style="text-align: center; color: #6B7280;">
-        <p>Wellness Outcomes Platform - Prototype Demo</p>
+        <p>YourDost QBR - Prototype Demo</p>
         <p>Report Generated: ${new Date().toLocaleString()}</p>
         <p style="margin-top: 10px; font-size: 9px;">© 2025 Wellness Analytics Demo. All data is synthetic.</p>
       </div>

@@ -32,7 +32,7 @@ interface MetricCardProps {
 function MetricCard({ icon, label, value, subtext, trend, trendValue, highlight }: MetricCardProps) {
   return (
     <div className={`
-      p-5 rounded-xl border transition-all
+      p-5 rounded-xl border transition-all h-full flex flex-col
       ${highlight 
         ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white border-blue-600' 
         : 'bg-white border-gray-200 hover:border-blue-200 hover:shadow-md'
@@ -59,7 +59,7 @@ function MetricCard({ icon, label, value, subtext, trend, trendValue, highlight 
           </div>
         )}
       </div>
-      <div className="mt-4">
+      <div className="mt-4 flex-grow flex flex-col">
         <div className={`text-3xl font-bold ${highlight ? 'text-white' : 'text-gray-900'}`}>
           {value}
         </div>
@@ -67,7 +67,7 @@ function MetricCard({ icon, label, value, subtext, trend, trendValue, highlight 
           {label}
         </div>
         {subtext && (
-          <div className={`text-xs mt-1 ${highlight ? 'text-blue-200' : 'text-gray-400'}`}>
+          <div className={`text-xs mt-auto pt-1 ${highlight ? 'text-blue-200' : 'text-gray-400'}`}>
             {subtext}
           </div>
         )}
@@ -95,7 +95,7 @@ export function ExecutiveSummary({ analytics }: Props) {
         <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">Key Outcomes</span>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+      <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
         <MetricCard
           icon={<Users className="w-5 h-5 text-blue-600" />}
           label="Enrolled"
